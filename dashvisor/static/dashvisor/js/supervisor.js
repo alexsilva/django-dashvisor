@@ -119,8 +119,8 @@
             if (result.content.length > 0) {
                 $modal_body.find(".loading").addClass("d-none");
                 $modal_body.find(".content").append(result.content);
+                this.config.data.offset = result.size;
             }
-            this.config.data.offset = result.size;
         }
         if ($ele.data("autoUpdate") === true) {
             $ele.data("updateTimeHandler", setTimeout(
