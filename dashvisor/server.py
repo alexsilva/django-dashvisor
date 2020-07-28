@@ -2,24 +2,31 @@ import http.client as httpclient
 import xmlrpc.client as xmlrpclient
 from collections import OrderedDict
 from urllib.parse import urlparse
-
+from xml.parsers import expat
 from supervisor import xmlrpc
+import time
 
 
 class ExceptionHandler(object):
-    def __init__(self, exc, defaults=None):
+    def __init__(self, exc, defaults=None, retry=3):
         self.exc = exc
         if defaults is None:
             defaults = False
         self.defaults = defaults
+        self.retry = retry
 
     def __call__(self, method):
         def wrap(self_, *args_, **kwargs_):
-            try:
-                return method(self_, *args_, **kwargs_)
-            except self.exc:
-                return self.defaults
-
+            retry = 0
+            while retry < self.retry:
+                try:
+                    return method(self_, *args_, **kwargs_)
+                except self.exc:
+                    time.sleep(retry * 0.005)
+                    continue
+                finally:
+                    retry += 1
+            return self.defaults
         return wrap
 
 
@@ -30,9 +37,7 @@ class Server(object):
         self.status = OrderedDict()
         self.id = id
 
-    @ExceptionHandler((httpclient.CannotSendRequest,
-                       httpclient.ResponseNotReady,
-                       AttributeError))
+    @ExceptionHandler((Exception,))
     def refresh(self):
         self.status = OrderedDict(("%s:%s" % (i['group'], i['name']), i)
                                   for i in self.connection.supervisor.getAllProcessInfo())
@@ -42,7 +47,9 @@ class Server(object):
             if program['name'] != program['group']:
                 program['human_name'] = "%s:%s" % (program['group'], program['name'])
 
-    @ExceptionHandler(httpclient.CannotSendRequest)
+    @ExceptionHandler((httpclient.CannotSendRequest,
+                       httpclient.ResponseNotReady,
+                       expat.ExpatError))
     def stop(self, name):
         try:
             return self.connection.supervisor.stopProcess(name)
@@ -52,7 +59,8 @@ class Server(object):
             raise
 
     @ExceptionHandler((httpclient.CannotSendRequest,
-                       httpclient.ResponseNotReady),
+                       httpclient.ResponseNotReady,
+                       expat.ExpatError),
                       defaults={'content': '', 'size': 0, 'overflow': False})
     def tail(self, name, offset=-1, length=None):
         if length is None:
@@ -63,7 +71,9 @@ class Server(object):
         except xmlrpclient.Fault as e:
             raise
 
-    @ExceptionHandler(httpclient.CannotSendRequest)
+    @ExceptionHandler((httpclient.CannotSendRequest,
+                       httpclient.ResponseNotReady,
+                       expat.ExpatError))
     def start(self, name):
         try:
             return self.connection.supervisor.startProcess(name)
@@ -72,7 +82,9 @@ class Server(object):
                 return False
             raise
 
-    @ExceptionHandler(httpclient.CannotSendRequest)
+    @ExceptionHandler((httpclient.CannotSendRequest,
+                       httpclient.ResponseNotReady,
+                       expat.ExpatError))
     def supervisor_restart(self):
         """supervisor restart"""
         return self.connection.supervisor.restart()
