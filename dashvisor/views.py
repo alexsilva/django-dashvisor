@@ -7,6 +7,9 @@ from django.shortcuts import render_to_response
 from dashvisor.backends import backend
 from dashvisor.utils import login_admin_only_required
 
+# safe for uls
+process_group_separator = '-'
+
 
 @login_admin_only_required
 def dashboard(request):
@@ -69,6 +72,7 @@ def control(request, server_alias, process, action):
     action = ControlAction(request, action)
     action.check_perm_or_404()
     action_args = action.args
+    process = process.replace(process_group_separator, ':')
     if process != '*':
         action_args.append(process)
     action_kwargs = action.kwargs
@@ -93,6 +97,7 @@ def _get_server_status(request, server, action):
     status = sorted(server.status.values(),
                     key=lambda x: (x['group'], x['name']))
     for process in status:
+        process['id'] = process['id'].replace(':', process_group_separator)
         process['server'] = {
             'name': "{0.name} ({0.id})".format(server),
             'id': server.id
