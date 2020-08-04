@@ -16,7 +16,7 @@
         var action = $ele.data("action");
         var process = $ele.data('process');
         $.ajax({
-            url: this.config.url + server_alias + "/" + process + "/" + action + "/",
+            url: this.config.url + encodeURIComponent (server_alias) + "/" + encodeURIComponent(process) + "/" + encodeURIComponent(action) + "/",
             cache: false,
             data: self.config.data || {},
             beforeSend: function (xhr) {
