@@ -1,6 +1,8 @@
 import socket
-
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 from django.http import Http404, JsonResponse
 from django.shortcuts import render_to_response
 
