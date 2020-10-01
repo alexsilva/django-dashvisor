@@ -1,10 +1,12 @@
+import html
 import http.client as httpclient
+import time
 import xmlrpc.client as xmlrpclient
 from collections import OrderedDict
 from urllib.parse import urlparse
 from xml.parsers import expat
+
 from supervisor import xmlrpc
-import time
 
 
 class ExceptionHandler(object):
@@ -27,6 +29,7 @@ class ExceptionHandler(object):
                 finally:
                     retry += 1
             return self.defaults
+
         return wrap
 
 
@@ -67,6 +70,7 @@ class Server(object):
             length = 1024 * 5
         try:
             result = self.connection.supervisor.tailProcessLog(name, offset, length)
+            result[0] = html.escape(result[0])
             return dict(zip(('content', 'size', 'overflow'), result))
         except xmlrpclient.Fault as e:
             raise
