@@ -106,7 +106,7 @@
                 $ele.data("autoUpdate", false);
                 clearTimeout($ele.data("updateTimeHandler"));
                 $ele.removeData("updateTimeHandler");
-                self.config.data.offset = 1024;
+                self.config.data.offset = 256;
             });
             $ele.data("autoUpdate", true);
         }
