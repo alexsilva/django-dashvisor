@@ -1,10 +1,8 @@
+# coding=utf-8
 import socket
-try:
-    from django.urls import reverse
-except ImportError:
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404, JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 
 from dashvisor.backends import backend
 from dashvisor.utils import login_admin_only_required
@@ -19,7 +17,7 @@ def dashboard(request):
         backend.refresh()
     except socket.error:
         pass
-    return render_to_response(
+    return render(
         'dashvisor/dashboard.html',
         {
             'servers': backend.servers,
