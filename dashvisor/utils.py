@@ -1,13 +1,14 @@
+# coding=utf-8
 from django.apps import apps
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.module_loading import import_string
-from django.utils import six
+
 
 app = apps.get_app_config('dashvisor')
 
 _func_test = app.get_option('user_passes_test',
                             lambda u: u.is_superuser)
-if isinstance(_func_test, six.string_types):
+if isinstance(_func_test, str):
     _func_test = import_string(_func_test)
 
 _login_url = app.get_option('login_url')
