@@ -18,8 +18,9 @@ def dashboard(request):
     except socket.error:
         pass
     return render(
+        request,
         'dashvisor/dashboard.html',
-        {
+        context={
             'servers': backend.servers,
             'query_url': reverse('dashvisor_query'),
             'base_path': reverse("dashvisor_dashboard"),
