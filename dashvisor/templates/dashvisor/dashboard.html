@@ -6,7 +6,7 @@
         <div class="clearfix control-bar mb-2">
         {% include 'dashvisor/g-action-dropdown.html' %}
         </div>
-        <table id="supervisor" class="table table-striped table-condensed" style="width:100%">
+        <table id="supervisor" class="table table-striped table-condensed w-100">
             <thead>
                 <tr>
                     <th>ServerID</th>
@@ -192,7 +192,7 @@
                     data: {offset: 256, length: 1024 * 5},
                     screen: $('#supervisor-modal')
                 }).action();
-            }, refresh_time = parseInt($.urlParam('autorefresh', 1)),
+            }, refresh_time = parseInt($.urlParam('autorefresh', 5)),
             fromTimer = function (data) {
                 table_actions();
                 setTimeout(function () {
