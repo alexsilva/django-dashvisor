@@ -183,11 +183,11 @@
                 ]
             });
             var table_actions = function() {
-                $("button.action").supervisor({
+                $("table button.action").supervisor({
                     url: control_url
                 }).action();
 
-                $("a.tail").supervisor({
+                $("table a.tail").supervisor({
                     url: control_url,
                     data: {offset: 256, length: 1024 * 5},
                     screen: $('#supervisor-modal')
