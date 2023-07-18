@@ -102,7 +102,7 @@
             var nunjucks_env = new nunjucks.Environment(new DOMTemplateEngine('#table'));
             var control_url = '{{ base_path }}control/';
             var action_index = 4;
-            var table = $('#supervisor').DataTable({
+            var $table = $('#supervisor').DataTable({
                 processing: false,
                 serverSide: false,
                 ajax: {
@@ -182,7 +182,7 @@
                     },
                 ]
             });
-            var table_event_bind = function() {
+            var table_actions = function() {
                 $("button.action").supervisor({
                     url: control_url
                 }).action();
@@ -192,8 +192,18 @@
                     data: {offset: 256, length: 1024 * 5},
                     screen: $('#supervisor-modal')
                 }).action();
-            };
-            table.on('init.dt', function () {
+            }, refresh_time = parseInt($.urlParam('autorefresh', 1)),
+            fromTimer = function (data) {
+                table_actions();
+                setTimeout(function () {
+                    autorefresh()
+                }, refresh_time * 1000);
+            }
+            // recursive call of autorefresh -> fromTimer
+            autorefresh = function () {
+                $table.ajax.reload(fromTimer);
+            }
+            $table.on('init.dt', function () {
                 $("#btn-g-action-update").supervisor({
                     url: control_url,
                     screen: $("#win-server-info"),
@@ -208,15 +218,11 @@
                     url: control_url,
                 }).action();
 
-                table_event_bind();
+                table_actions();
             });
-            var autorefresh = parseInt($.urlParam('autorefresh', 5));
-            if (autorefresh !== 0 && !isNaN(autorefresh)) {
-                setInterval( function () {
-                    $('#supervisor').DataTable().ajax.reload(function (data) {
-                        table_event_bind();
-                    });
-                }, autorefresh * 1000);
+
+            if (refresh_time !== 0 && !isNaN(refresh_time)) {
+                autorefresh();
             }
         });
     </script>
