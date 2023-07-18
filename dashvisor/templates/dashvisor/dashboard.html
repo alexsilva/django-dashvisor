@@ -219,11 +219,11 @@
                 }).action();
 
                 table_actions();
-            });
 
-            if (refresh_time !== 0 && !isNaN(refresh_time)) {
-                autorefresh();
-            }
+                if (refresh_time !== 0 && !isNaN(refresh_time)) {
+                    autorefresh();
+                }
+            });
         });
     </script>
 {% endblock %}
