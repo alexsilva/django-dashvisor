@@ -148,7 +148,11 @@
 
     $.fn.Supervisor = Supervisor;
     $.fn.supervisor = function (config) {
-        return new Supervisor($(this), config || {})
+        var $el = $(this);
+        if (!$el.data('supervisor')) {
+            $el.data('supervisor', new Supervisor($el, config || {}));
+        }
+        return $el.data('supervisor');
     };
 
 }(jQuery));
