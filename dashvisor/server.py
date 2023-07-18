@@ -165,5 +165,4 @@ class Server(object):
         return self.connection.supervisor.stopAllProcesses()
 
     def restart(self, name):
-        self.stop(name)
-        return self.start(name)
+        return self.connection.supervisor.restartProcess(name)
