@@ -101,7 +101,8 @@
         $(document).ready(function () {
             var nunjucks_env = new nunjucks.Environment(new DOMTemplateEngine('#table'));
             var control_url = '{{ base_path }}control/';
-            var action_index = 4;
+            var action_index = 4,
+                refresh_time = parseInt($.urlParam('autorefresh', 3));
             var $table = $('#supervisor').DataTable({
                 processing: false,
                 serverSide: false,
@@ -113,6 +114,11 @@
                             'action': 'refresh'
                         });
                         return data
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (refresh_time !== 0 && !isNaN(refresh_time)) {
+                            setTimeout(autorefresh, refresh_time * 2000)
+                        }
                     }
                 },
                 columns: [
@@ -192,7 +198,7 @@
                     data: {offset: 256, length: 1024 * 5},
                     screen: $('#supervisor-modal')
                 }).action();
-            }, refresh_time = parseInt($.urlParam('autorefresh', 5)),
+            },
             fromTimer = function (data) {
                 table_actions();
                 setTimeout(function () {
