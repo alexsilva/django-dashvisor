@@ -93,10 +93,8 @@ def control(request, server_alias, process, action):
 
 def _get_server_status(request, server, action):
     """get server status data"""
-    if action == 'refresh':
-        server.refresh()
-    status = sorted(server.status.values(),
-                    key=lambda x: (x['group'], x['name']))
+    status = server.refresh() if action == 'refresh' else {}
+    status = sorted(status.values(), key=lambda x: (x['group'], x['name']))
     for process in status:
         process['id'] = process['id'].replace(':', process_group_separator)
         process['server'] = {

@@ -37,18 +37,18 @@ class Server(object):
     def __init__(self, connection_string, id):
         self.name = urlparse(connection_string).hostname
         self.connection = xmlrpclient.ServerProxy(connection_string)
-        self.status = OrderedDict()
         self.id = id
 
-    @ExceptionHandler((Exception,))
+    @ExceptionHandler((Exception,), defaults={})
     def refresh(self):
-        self.status = OrderedDict(("%s:%s" % (i['group'], i['name']), i)
-                                  for i in self.connection.supervisor.getAllProcessInfo())
-        for key, program in self.status.items():
+        status = OrderedDict(("%s:%s" % (i['group'], i['name']), i)
+                             for i in self.connection.supervisor.getAllProcessInfo())
+        for key, program in status.items():
             program['id'] = key
             program['human_name'] = program['name']
             if program['name'] != program['group']:
                 program['human_name'] = "%s:%s" % (program['group'], program['name'])
+        return status
 
     @ExceptionHandler((httpclient.CannotSendRequest,
                        httpclient.ResponseNotReady,
