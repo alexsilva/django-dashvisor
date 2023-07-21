@@ -150,7 +150,7 @@
     $.fn.supervisor = function (config) {
         var $el = $(this);
         if (!$el.data('supervisor')) {
-            $el.data('supervisor', new Supervisor($el, config || {}));
+            $el.data('supervisor', (new Supervisor($el, config || {})).action());
         }
         return $el.data('supervisor');
     };

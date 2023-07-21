@@ -191,13 +191,13 @@
             var table_actions = function() {
                 $("table button.action").supervisor({
                     url: control_url
-                }).action();
+                });
 
                 $("table a.tail").supervisor({
                     url: control_url,
                     data: {offset: 256, length: 1024 * 5},
                     screen: $('#supervisor-modal')
-                }).action();
+                });
             },
             fromTimer = function (data) {
                 table_actions();
