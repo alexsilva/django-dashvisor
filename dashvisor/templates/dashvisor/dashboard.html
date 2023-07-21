@@ -214,15 +214,15 @@
                     url: control_url,
                     screen: $("#win-server-info"),
                     template: nunjucks_env.getTemplate("update-config", true)
-                }).action();
+                });
 
                 $("#btn-g-action-restart").supervisor({
                     url: control_url
-                }).action();
+                });
 
                 $("button.startall,.restartall,.stopall").supervisor({
                     url: control_url,
-                }).action();
+                });
 
                 table_actions();
 
