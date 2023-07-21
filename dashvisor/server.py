@@ -160,9 +160,12 @@ class Server(object):
     def restart_all(self):
         try:
             return self.connection.supervisor.restartAllProcesses()
-        except xmlrpc.Faults.UNKNOWN_METHOD:
-            self.stop_all()
-            return self.start_all()
+        except xmlrpclient.Fault as exc:
+            if exc.faultCode == xmlrpc.Faults.UNKNOWN_METHOD:
+                self.stop_all()
+                return self.start_all()
+            else:
+                raise exc
 
     def stop_all(self):
         return self.connection.supervisor.stopAllProcesses()
@@ -170,6 +173,9 @@ class Server(object):
     def restart(self, name):
         try:
             return self.connection.supervisor.restartProcess(name)
-        except xmlrpc.Faults.UNKNOWN_METHOD:
-            self.stop(name)
-            return self.start(name)
+        except xmlrpclient.Fault as exc:
+            if exc.faultCode == xmlrpc.Faults.UNKNOWN_METHOD:
+                self.stop(name)
+                return self.start(name)
+            else:
+                raise exc
