@@ -37,6 +37,7 @@ class Server(object):
     def __init__(self, connection_string, id):
         self.name = urlparse(connection_string).hostname
         self.connection = xmlrpclient.ServerProxy(connection_string)
+        self.status = {}
         self.id = id
 
     @ExceptionHandler((Exception,), defaults={})
@@ -48,6 +49,7 @@ class Server(object):
             program['human_name'] = program['name']
             if program['name'] != program['group']:
                 program['human_name'] = "%s:%s" % (program['group'], program['name'])
+        self.status = status
         return status
 
     @ExceptionHandler((httpclient.CannotSendRequest,
